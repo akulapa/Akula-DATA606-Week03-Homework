@@ -1,0 +1,404 @@
+---
+title: "Akula-DATA606-Week03-Homework"
+author: "Pavan Akula"
+date: "February 14, 2017"
+output: html_document
+---
+
+To solve the question from chapter 3 of OpenIntro Statistics, Third Edition 
+
+Libraries used
+
+```{r , eval=TRUE}
+library(dplyr)
+library(ggplot2)
+library(utils)
+library(DATA606)
+```
+
+##Graded Questions
+
+**_Q 1: (3.2)_** Area under the curve, Part I. What percent of a standard normal distribution N($\mu$ = 0; $\sigma$  = 1) is found in each region? Be sure to draw a graph.
+
+  (a) Z > -1.13 (b) Z < 0.18 (c) Z > 8 (d) |Z| < 0.5
+
+**_A: Plot points used for x-axis range between -3 and 3 because $\mu \pm 3*\sigma$ is -3 and 3._**
+
+**_(a) Using Normal probability table percentile of Z > -1.13 is 1 - 0.1292 = 0.8708. Area of intrest is between -1.13 and 3. Following shows graphically._**
+
+```{r, echo=TRUE}
+normalPlot(mean = 0, sd = 1, bounds = c(-1.13,3), tails = FALSE)
+```
+
+**_A: (b) Percentile of Z < 0.18 is 0.5714. Area of intrest is between -3 and 0.18. Following shows graphically._**
+
+```{r, echo=TRUE}
+normalPlot(mean = 0, sd = 1, bounds = c(-3,0.18), tails = FALSE)
+```
+
+**_A: (c) According to normal probability table Z >= 3:50 is 0.9998. So percentile of Z > 8 is 1 - 0.9998 = 0.0002. Area of intrest is between 8 and beyond. This tells us distribution is right skewed and observation is outlier._**
+
+```{r, echo=TRUE}
+# Since normalPlot function has limitation with plot points -4 and 4. Graph cannot be displayed.
+
+# x <- seq(-4, 4, length = 100) * sd + mean
+
+# normalPlot(mean = 0, sd = 1, bounds = c(8,10), tails = TRUE)
+```
+**_A: (d) Percentile of |Z| < 0.5  is expanded as -0.5 > Z > 0.5. Area of intrest is less than -0.5 and greater than 0.5, tail ends on both sides. (Percentile of -0.5 + (1 - (Percentile of 0.5)). (0.3085 + (1 - 0.6915)) = 0.617. Following shows graphically._**
+```{r, echo=TRUE}
+normalPlot(mean = 0, sd = 1, bounds = c(-0.5,0.5), tails = TRUE)
+```
+
+**_Q 2: (3.4)_** Triathlon times, Part I. In triathlons, it is common for racers to be placed into age and gender groups. Friends Leo and Mary both completed the Hermosa Beach Triathlon, where Leo competed in the Men, Ages 30 - 34 group while Mary competed in the Women, Ages 25 - 29 group. Leo completed the race in 1:22:28 (4948 seconds), while Mary completed the race in
+1:31:53 (5513 seconds). Obviously Leo finished faster, but they are curious about how they did within their respective groups. Can you help them? Here is some information on the performance of their groups:
+
+  1. The finishing times of the Men, Ages 30 - 34 group has a mean of 4313 seconds with a standard deviation of 583 seconds.
+  2. The finishing times of the Women, Ages 25 - 29 group has a mean of 5261 seconds with a standard deviation of 807 seconds.
+  3. The distributions of nishing times for both groups are approximately Normal.
+
+Remember: a better performance corresponds to a faster finish.
+
+  (a) Write down the short-hand for these two normal distributions.
+
+  (b) What are the Z-scores for Leo's and Mary's finishing times? What do these Z-scores tell you?
+
+  (c) Did Leo or Mary rank better in their respective groups? Explain your reasoning.
+
+  (d) What percent of the triathletes did Leo finish faster than in his group?
+
+  (e) What percent of the triathletes did Mary finish faster than in her group?
+
+  (f) If the distributions of finishing times are not nearly normal, would your answers to parts (b) - (e) change? Explain your reasoning.
+
+**_A: (a) Short hand notation for Leo's group: N($\mu$ = 4313, $\sigma$ = 583), Mary's group: N($\mu$ = 5261, $\sigma$ = 807) _**
+
+**_(b) Z-Score = $\frac{(x - \mu)}{\sigma}$. Time taken by Leo = 4948, his Z-score, Z~L~(x=4948) = $\frac{(4948 - 4313)}{583}$ = `r {(4948 - 4313)/583}`. Time taken by Mary = 5513 her Z-score, Z~M~(x=5513) = $\frac{(5513 - 5261)}{807}$ = `r {(5513 - 5261)/807}`. Z-score of an observation tells if it falls above or below mean. In the case of Leo, his race completion time is `r {(4948 - 4313)/583}` standard deviations(4313) above mean. Mary's completion time is `r {(5513 - 5261)/807}` standard deviations(5261) above mean in her group_**
+
+**_(c) Since this a triathlon race completion time should be less than mean and negative Z-score is better. If Z-score is positive lower number indicates better performance. Based on Z-score's it appears Mary ranked better in her group than Leo did in his group._**
+
+**_(d) Based on normal probability table, Leo's race completion time falls in 86^th^ percentile (rounded to 2 digits). He finished faster than (1 - 0.86 = 0.14) 14% percent of triathletes in his group._**
+
+**_(e) Based on normal probability table, Mayr's race completion time falls in 62^nd^ percentile (rounded to 2 digits). She finished faster than (1 - 0.62 = 0.38) 38% percent of triathletes in her group._**
+
+**_(f) Z-scores can be calculated even if distribution is not normal. So my answer to questions (b) and (c) does not change. Where as for questions (d) through (e) are dependent on percentile table, if the distribution is not normal my answers will vary. _**
+
+
+**_Q 3: (3.18)_** Heights of female college students. Below are heights of 25 female college students.
+
+  (a) The mean height is 61.52 inches with a standard deviation of 4.58 inches. Use this information to determine if the heights approximately follow the 68-95-99.7% Rule.
+  (b) Do these data appear to follow a normal distribution? Explain your reasoning using the graphs provided below.
+
+```{r, echo=TRUE}
+# female data frame
+
+female<-seq(1:25)
+height <- c(54,55,56,56,57,58,58,59,60,60,60,61,61,62,62,63,63,63,64,65,65,67,67,69,73)
+female.height <- data.frame(female,height)
+
+heightMean <- 61.52
+heightSD <- 4.58
+
+hist(female.height$height, probability = TRUE, ylim = c(0, 0.10))
+x <- 50:80
+y <- dnorm(x = x, mean = heightMean, sd = heightSD)
+lines(x = x, y = y, col = "blue")
+```
+
+```{r, echo=TRUE}
+qqnorm(female.height$height)
+qqline(female.height$height)
+```
+```{r, echo=TRUE}
+# Set ranges
+height.Rule68Min <- heightMean - heightSD
+height.Rule68Max <- heightMean + heightSD
+
+height.Rule95Min <- heightMean - (2*heightSD)
+height.Rule95Max <- heightMean + (2*heightSD)
+
+height.Rule99Min <- heightMean - (3*heightSD)
+height.Rule99Max <- heightMean + (3*heightSD)
+
+# Apply the ranges to the table
+female.height$percentileRule <- ifelse(female.height$height >= height.Rule68Min & female.height$height <= height.Rule68Max, 68, -1)
+female.height$percentileRule <- ifelse(female.height$percentileRule == -1 & female.height$height >= height.Rule95Min & female.height$height <= height.Rule95Max, 95, female.height$percentileRule)
+female.height$percentileRule <- ifelse(female.height$percentileRule == -1 & female.height$height >= height.Rule99Min & female.height$height <= height.Rule99Max, 99.7, female.height$percentileRule)
+
+
+nrow(subset(female.height, female.height$percentileRule == 68)) / nrow(female.height) * 100
+nrow(subset(female.height, female.height$percentileRule <= 95)) / nrow(female.height) * 100
+nrow(subset(female.height, female.height$percentileRule <= 99.7)) / nrow(female.height) * 100
+head(female.height,25)
+
+```
+
+**_A: (a) Percentage of observations that fall within one standard deviation of mean: `r {nrow(subset(female.height, female.height$percentileRule == 68)) / nrow(female.height) * 100}` _**
+
+**_Percentage of observations that fall within two standard deviations of mean: `r {nrow(subset(female.height, female.height$percentileRule <= 95)) / nrow(female.height) * 100}` _**
+
+**_Percentage of observations that fall within three standard deviations of mean: `r {nrow(subset(female.height, female.height$percentileRule <= 99.7)) / nrow(female.height) * 100}` _**
+
+**_As above numbers prove that scores approximately follow the 68-95-99.7% Rule._**
+
+**_(b) Based on visual inspection of histogram scores distribution is unimodal and symmetrical. Curve drawn over the histogram appears to approximately fit the distribution. Also scores on normal distribution plot are line hugging with an exception of outliers on tail ends. Overall scores appear to be normally distributed._**
+
+
+**_Q 4: (3.22)_** Defective rate. A machine that produces a special type of transistor (a component of computers) has a 2% defective rate. The production is considered a random process where each transistor is independent of the others.
+
+  (a) What is the probability that the 10th transistor produced is the first with a defect?
+  (b) What is the probability that the machine produces no defective transistors in a batch of 100?
+  (c) On average, how many transistors would you expect to be produced before the first with a defect? What is the standard deviation?
+  (d) Another machine that also produces transistors has a 5% defective rate where each transistor is produced independent of the others. On average how many transistors would you expect to be produced with this machine before the first with a defect? What is the standard deviation?
+  (e) Based on your answers to parts (c) and (d), how does increasing the probability of an event affect the mean and standard deviation of the wait time until success?
+
+**_A: (a) According to geometric distribution, probability of a success in one trial is p and the probability of a failure is (1 - p), then the probability of finding the first success in the nth trial is given by (1 - p)^(n-1)^p._**
+
+**_Probability of finding defective transistor (p) = 0.02 (2%), probability of finding non defective transistor (1-p) = 1 - 0.02 = 0.98. Total trials (n) = 10. Probability that the tenth transistor selected is defective = (1 - p)^(n-1)^ \* p = (0.98)^(10-1)^ \* (0.02) = `r {((0.98)^(10-1))*(0.02)}`_**
+
+**_(b) Probability that the machine produces no defective transistors in a batch of 100? 1 - (p^100^) = `r {1 - ((0.02)^100)}`_**
+
+**_(c) According to geometric distribution, mean $\mu = \frac{1}{p}$ and standard deviation $\sigma = \sqrt{\frac{1 - p}{{p}^{2}}}$ where probability of finding defective transistor (p) = 0.02. _**
+
+**_Mean $\mu$ = 1/0.02 = `r {1/0.02}`. So expected number of transistors to be produced by the machine before defective transistor is `r {1/0.02}` , standard deviation $\sigma = \sqrt{\frac{1 - 0.02}{{0.02}^{2}}}$ = `r {sqrt((1-0.02)/((0.02)^2))}`_**
+
+**_(d) Probability of producing defective transistor by second machine (p) = 0.05. Mean $\mu$ = 1/0.05 = `r {1/0.05}`. So expected number of transistors to be produced by the machine before defective transistor is `r {1/0.05}` , standard deviation $\sigma = \sqrt{\frac{1 - 0.05}{{0.05}^{2}}}$ = `r {sqrt((1-0.05)/((0.05)^2))}`  _**
+
+**_(e) As the probability of success increased, in this case producing defective transistors mean and standard deviation decreased. Suggesting machine will produce defective transistors more frequently, wait time of success decreases. Probability of success and mean are inversely proportional. So is standard deviation._**
+
+**_Q 5: (3.38)_** Male children. While it is often assumed that the probabilities of having a boy or a girl are the same, the actual probability of having a boy is slightly higher at 0.51. Suppose a couple plans to have 3 kids.
+
+  (a) Use the binomial model to calculate the probability that two of them will be boys.
+  (b) Write out all possible orderings of 3 children, 2 of whom are boys. Use these scenarios to calculate the same probability from part (a) but using the addition rule for disjoint outcomes. Confirm that your answers from parts (a) and (b) match.
+  (c) If we wanted to calculate the probability that a couple who plans to have 8 kids will have 3 boys, briey describe why the approach from part (b) would be more tedious than the approach from part (a).
+
+**_A: (a) Probability of having boy is considered success (p) = 0.51, having girl is considered failure (1 - p) = (1 - 0.51) = 0.49. Binominal model can be applied in calculating probability because _**
+
+  (1) The trials are independent.
+  (2) The number of trials, n, is fixed.
+  (3) Each trial outcome can be classified as a success or failure.
+  (4) The probability of a success, p, is the same for each trial.
+
+**_In this case number of independent trials(n) is 3, with having 2(k) boys as success. According to the Binomial distribution for 3 trials(n), p = $\binom{n}{k}$p^k^(1-p)^(n-k)^ = $\binom{3}{2}$ x 0.51^(2)^ x (1-0.51)^(3-2)^= `r {dbinom(2,3,0.51)}`_**
+
+**_(b) Combination of 2 boys and a girl can be {B,B,G}, {B,G,B}, {G,B,B}, probability is P({B,B,G}) + P({B,B,G}) + P({B,B,G}) =  (0.51)*(0.51)*(0.49) + (0.51)*(0.49)*(0.51) + (0.49)*(0.51)*(0.51) = `r {(0.51)*(0.51)*(0.49) + (0.51)*(0.49)*(0.51) + (0.49)*(0.51)*(0.51)}`. This proves that (a) and (b) match._**
+
+**_Family wanting to have 8(n) children with 3(k) boys. Combination of 8 trials(n) with 3 success(k) is $\binom{n}{k} = \frac{n!}{k!\left(n - k \right)!} = \frac{8!}{3!\left(8 - 3\right)!}$ = `r {factorial(8)/(factorial(3)*factorial(5))}`. As tracking `r {factorial(8)/(factorial(3)*factorial(5))}` combinations of 8 children is more complex and calculation errors may happen. _**
+
+```
+# factorial(8)/(factorial(3)*factorial(5))
+```
+
+**_Q 6: (3.42)_** Serving in volleyball. A not-so-skilled volleyball player has a 15% chance of making the serve, which involves hitting the ball so it passes over the net on a trajectory such that it will land in the opposing team's court. Suppose that her serves are independent of each other.
+
+  (a) What is the probability that on the 10^th^ try she will make her 3^rd^ successful serve?
+  (b) Suppose she has made two successful serves in nine attempts. What is the probability that her 10^th^ serve will be successful?
+  (c) Even though parts (a) and (b) discuss the same scenario, the probabilities you calculated should be different. Can you explain the reason for this discrepancy?
+
+**_A: (a) Using Negative Binomial Distribution. Probability of successful server (p) = 0.15(15%). Failure = (1 - p) = (1 - 0.15) = 0.85. In this case, 10^th^ serve has to be successful 3^rd^ serve. P(3^rd^(k) successful serve on 10^th^ trial(n)) =  $\binom{n-1}{k-1}$p^k^(1-p)^(n-k)^ = $\binom{10-1}{3-1}$ x 0.15^(3)^ x (1-0.15)^(10-3)^= `r {(factorial(9)/(factorial(2)*factorial(7)))*(0.15^3)*(0.85^7)}`_**
+
+**_(b) Since all servers are independent probability of having success on 10^th^ serve is same as probability of having success on any serve. In this case it 15%. Probability of having success on 10^th^ serve is 0.15_**
+
+**_(c) In the case of question (a) last try which is 10^th^ needed to be successful. So we used Negative Binomial model to determine the probability. Where as in question (b) we are looking for probabity of single event to be successful. Hence difference in answers._**
+
+
+##Practice Questions
+
+
+**_Q 1: (3.1)_** Area under the curve, Part I. What percent of a standard normal distribution N($\mu$ = 0; $\sigma$  = 1) is found in each region? Be sure to draw a graph.
+
+  (a) Z < -1.35 (b) Z > 1.48 (c) -0.4 < Z < 1.5 (d) |Z| > 2
+
+**_A: Plot points used for x-axis range between -3 and 3 because $\mu \pm 3*\sigma$ is -3 and 3._**
+
+**_(a) Using Normal probability table percentile of Z < -1.35 is 0.0885. Following shows graphically._**
+
+```{r, echo=TRUE}
+normalPlot(mean = 0, sd = 1, bounds = c(-3,-1.35), tails = FALSE)
+```
+
+**_A: (b) Percentile of Z > 1.48  is 1 - 0.9306 = 0.0694. Area of intrest is between 1.48 and 3. Following shows graphically._**
+
+```{r, echo=TRUE}
+normalPlot(mean = 0, sd = 1, bounds = c(1.48,3), tails = FALSE)
+```
+
+**_A: (c) Percentile of -0.4 < Z < 1.5  is P. Area of intrest is between -0.4 and 1.5. (Percentile of 1.5 - Percentile of -0.4) = (0.9332 - 0.3446)) = 0.5886. Following shows graphically._**
+
+```{r, echo=TRUE}
+normalPlot(mean = 0, sd = 1, bounds = c(-0.4,1.5), tails = FALSE)
+```
+**_A: (d) Percentile of |Z| > 2  is expanded as -2 > Z > 2. Area of intrest is less than -2 and greater than 2, tail ends on both sides. (Percentile of -2 + (1 - (Percentile of 2)). (0.0228 + (1 - 0.9772)) = 0.0456. Following shows graphically._**
+```{r, echo=TRUE}
+normalPlot(mean = 0, sd = 1, bounds = c(-2,2), tails = TRUE)
+```
+
+**_Q 2: (3.3)_** GRE scores, Part I. Sophia who took the Graduate Record Examination (GRE) scored
+160 on the Verbal Reasoning section and 157 on the Quantitative Reasoning section. The mean
+score for Verbal Reasoning section for all test takers was 151 with a standard deviation of 7, and
+the mean score for the Quantitative Reasoning was 153 with a standard deviation of 7.67. Suppose
+that both distributions are nearly normal.
+
+  (a) Write down the short-hand for these two normal distributions.
+  (b) What is Sophia's Z-score on the Verbal Reasoning section? On the Quantitative Reasoning section? Draw a standard normal distribution curve and mark these two Z-scores.
+  (c) What do these Z-scores tell you?
+  (d) Relative to others, which section did she do better on?
+  (e) Find her percentile scores for the two exams.
+  (f) What percent of the test takers did better than her on the Verbal Reasoning section? On the Quantitative Reasoning section?
+  (g) Explain why simply comparing raw scores from the two sections could lead to an incorrect conclusion as to which section a student did better on.
+  (h) If the distributions of the scores on these exams are not nearly normal, would your answers to parts (b) - (f) change? Explain your reasoning.
+
+**_A: (a) Verbal Reasoning short hand: N($\mu$ = 151, $\sigma$ = 7), Quantitative Reasoning section: N($\mu$ = 153, $\sigma$ = 7.67) _**
+
+**_(b) Z-Score = $\frac{(x - \mu)}{\sigma}$. Sophia's Verbal Reasoning section score is 160, her Z~VR~(x=160) = $\frac{(160 - 151)}{7}$ = 1.285714. Her Quantitative Reasoning section score is 157, Z~QR~(x=157) = $\frac{(157 - 153)}{7.67}$ = 0.5215124. _**
+
+```{r, echo=TRUE}
+# Sophia's Verbal Reasoning section percentile (rounded to 2 digit) Z = 1.29.
+x = seq(-2,2,by=0.1)
+sdNormaldis <- data.frame(x = x, y = dnorm(x))
+ggplot(sdNormaldis,aes(x=x,y=y)) + geom_line() + geom_vline(xintercept=1.29)
+```
+
+
+```{r, echo=TRUE}
+# Sophia's Quantitative Reasoning section percentile (rounded to 2 digit) Z = 0.52.
+x = seq(-2,2,by=0.1)
+sdNormaldis <- data.frame(x = x, y = dnorm(x))
+ggplot(sdNormaldis,aes(x=x,y=y)) + geom_line() + geom_vline(xintercept=0.52)
+```
+
+**_(c) Z-score of an observation tells if it falls above or below mean. In Sophia's case her Verbal Reasoning section score is 1.29 standard deviation(7) above mean. Quantitative Reasoning section score is 0.52 standard deviation(7.67) above mean. _**
+
+**_(d) Average score of Verbal Reasoning section 151. Looking at her Z-scores, she did very well in Verbal Reasoning section.   Her score falls 1.29 standard deviations above from mean. She falls in 90~th~ percentile._**
+
+**_(e) Sophia's Verbal Reasoning section percentile(rounded to 2) Z~1.29~ = 0.9015, Quantitative Reasoning section percentile(rounded to 2) Z~0.52~ = 0.6985_**
+
+**_(f) Percentile of students who did better than Sophia in Verbal Reasoning section(1 - Sophia's Verbal Reasoning section) = 1 - 0.9015 = 0.0985. 10% of students did better than Sophia, Percentile of student who did better than Sophia in Quantitative Reasoning section (1 - Sophia's Quantitative Reasoning section) = 1 - 0.6985 = 0.3015. 30% of students did better than Sophia._**
+
+**_(g) Since both section are on different scales (mean, standard deviation are different) so comparing both scores would be misleading. However comparing percentiles may be useful._**
+
+**_(h) Z-scores can be calculated even if distribution is not normal. So my answer to question (b) does not change. Where as questions (c) through (f) are dependent on percentile table, if the distribution is not normal my answers will vary. _**
+
+
+**_Q: 3 (3.17)_** Scores on stats final. Below are final exam scores of 20 Introductory Statistics students
+
+  (a) The mean score is 77.7 points. with a standard deviation of 8.44 points. Use this information to determine if the scores approximately follow the 68-95-99.7% Rule. 
+  (b) Do these data appear to follow a normal distribution? Explain your reasoning using the graphs provided below.
+
+
+```{r, echo=TRUE}
+# Scores data frame
+
+student<-seq(1:20)
+score <- c(57,66,69,71,72,73,74,77,78,78,79,79,81,81,82,83,83,88,89,94)
+scores.data <- data.frame(student,score)
+
+scoreMean <- 77.7
+scoreSD <- 8.44
+
+hist(scores.data$score, probability = TRUE, ylim = c(0, 0.06))
+x <- 50:110
+y <- dnorm(x = x, mean = scoreMean, sd = scoreSD)
+lines(x = x, y = y, col = "blue")
+```
+
+```{r, echo=TRUE}
+qqnorm(scores.data$score)
+qqline(scores.data$score)
+```
+```{r, echo=TRUE}
+# Set ranges
+scores.Rule68Min <- scoreMean - scoreSD
+scores.Rule68Max <- scoreMean + scoreSD
+
+scores.Rule95Min <- scoreMean - (2*scoreSD)
+scores.Rule95Max <- scoreMean + (2*scoreSD)
+
+scores.Rule99Min <- scoreMean - (3*scoreSD)
+scores.Rule99Max <- scoreMean + (3*scoreSD)
+
+# Apply the ranges to the table
+scores.data$percentileRule <- ifelse(scores.data$score >= scores.Rule68Min & scores.data$score <= scores.Rule68Max, 68, -1)
+scores.data$percentileRule <- ifelse(scores.data$percentileRule == -1 & scores.data$score >= scores.Rule95Min & scores.data$score <= scores.Rule95Max, 95, scores.data$percentileRule)
+scores.data$percentileRule <- ifelse(scores.data$percentileRule == -1 & scores.data$score >= scores.Rule99Min & scores.data$score <= scores.Rule99Max, 99.7, scores.data$percentileRule)
+
+
+nrow(subset(scores.data, scores.data$percentileRule == 68)) / nrow(scores.data) * 100
+nrow(subset(scores.data, scores.data$percentileRule <= 95)) / nrow(scores.data) * 100
+nrow(subset(scores.data, scores.data$percentileRule <= 99.7)) / nrow(scores.data) * 100
+head(scores.data,20)
+
+```
+
+**_A: (a) Percentage of observations that fall within one standard deviation of mean: `r {nrow(subset(scores.data, scores.data$percentileRule == 68)) / nrow(scores.data) * 100}` _**
+
+**_Percentage of observations that fall within two standard deviations of mean: `r {nrow(subset(scores.data, scores.data$percentileRule <= 95)) / nrow(scores.data) * 100}` _**
+
+**_Percentage of observations that fall within three standard deviations of mean: `r {nrow(subset(scores.data, scores.data$percentileRule <= 99.7)) / nrow(scores.data) * 100}` _**
+
+**_As above numbers prove that scores approximately follow the 68-95-99.7% Rule._**
+
+**_(b) Based on visual inspection of histogram scores distribution is unimodal and symmetrical. Curve drawn over the histogram appears to approximately fit the distribution. Also scores on normal distribution plot are line hugging with an exception of outliers on tail ends. Overall scores appear to be normally distributed._**
+
+**_Q 4 (3.21)_** Married women. The 2010 American Community Survey estimates that 47.1% of women ages 15 years and over are married.
+
+(a) We randomly select three women between these ages. What is the probability that the third woman selected is the only one who is married? 
+(b) What is the probability that all three randomly selected women are married? 
+(c) On average, how many women would you expect to sample before selecting a married woman? What is the standard deviation?
+(d) If the proportion of married women was actually 30%, how many women would you expect to sample before selecting a married woman? What is the standard deviation? 
+(e) Based on your answers to parts (c) and (d), how does decreasing the probability of an event affect the mean and standard deviation of the wait time until success
+
+**_A: (a) According to geometric distribution, probability of a success in one trial is p and the probability of a failure is (1 - p), then the probability of finding the first success in the nth trial is given by (1 - p)^(n-1)^p._**
+
+**_Probability of selecting married women (p) = 0.471, probability of selecting women that is not married (1-p) = 1 - 0.471 = 0.529. Total trials (n) = 3. Probability that the third woman selected is the only one who is married = (1 - p)^(n-1)^ \* p = (0.529)^(3-1)^ \* (0.471) = `r {((0.529)^(3-1))*(0.471)}`_**
+
+**_(b) Probability that all three randomly selected women are married p^3^ = `r {(0.471)^3}`_**
+
+**_(c) According to geometric distribution, mean $\mu = \frac{1}{p}$ and standard deviation $\sigma = \sqrt{\frac{1 - p}{{p}^{2}}}$ where probability of selecting married women (p) = 0.471. _**
+
+**_Mean $\mu$ = 1/0.471 = `r {1/0.471}`. So expected number of women to be sampled before selecting married women is `r {1/0.471}` , standard deviation $\sigma = \sqrt{\frac{1 - 0.471}{{0.471}^{2}}}$ = `r {sqrt((1-0.471)/((0.471)^2))}`_**
+
+**_(d) If proportion is changed to 30%, then probability of selecting married women (p) = 0.30. Mean $\mu$ = 1/0.30 = `r {1/0.30}`. So expected number of women to be sampled before selecting married women is `r {1/0.30}` , standard deviation $\sigma = \sqrt{\frac{1 - 0.30}{{0.30}^{2}}}$ = `r {sqrt((1-0.30)/((0.30)^2))}`_**
+
+**_(e) As the probability of success decreases mean and standard deviation increases. Probability of success and mean are inversely proportional. So is standard deviation._**
+
+**_Q 5: (3.37)_** Exploring combinations. The formula for the number of ways to arrange n objects is n! = n x (n - 1) x ... x 2 x 1. This exercise walks you through the derivation of this formula for a couple of special cases. A small company has five employees: Anna, Ben, Carl, Damian, and Eddy. There are five parking spots in a row at the company, none of which are assigned, and each day the employees pull into a random parking spot. That is, all possible orderings of the cars in the row of spots are equally likely.
+
+  (a) On a given day, what is the probability that the employees park in alphabetical order? 
+  (b) If the alphabetical order has an equal chance of occurring relative to all other possible orderings, how many ways must there be to arrange the five cars? 
+  (c) Now consider a sample of 8 employees instead. How many possible ways are there to order these 8 employees' cars?
+
+**_A: (a) Probabilaty of Anna using first parking spot is $\frac{1}{5}$, Ben using second sopt is $\frac{1}{5 - 1}$, Carl using third spot is $\frac{1}{5 - 2}$, Damian using forth spot is $\frac{1}{5 - 3}$, Eddy using third spot is $\frac{1}{5 - 4}$. On a given day probability that the employees park in alphabetical order p = $\left(\frac{1}{5}\right) * \left(\frac{1}{5 - 1}\right) * \left(\frac{1}{5 - 2}\right) * \left(\frac{1}{5 - 3}\right) * \left(\frac{1}{5 - 4}\right)$ = `r {(1/5)*(1/4)*(1/3)*(1/2)*(1)}`._**
+
+**_(b) 5 cars can be arranged in 5 factorial(5!) combinations 5! = 5 \* 4 \* 3 \* 2 \* 1 = `r {factorial(5)}`._**
+
+**_(c) 8 cars can be arranged in 8 factorial(8!) combinations 8! = 8 \* 7 \* 6 \* 5 \* 4 \* 3 \* 2 \* 1 = 40320_**
+
+
+**_Q 6: (3.41)_** Sampling at school. For a sociology class project you are asked to conduct a survey on 20 students at your school. You decide to stand outside of your dorm's cafeteria and conduct the survey on a random sample of 20 students leaving the cafeteria after dinner one evening. Your dorm is comprised of 45% males and 55% females. 
+
+  (a) Which probability model is most appropriate for calculating the probability that the 4th person you survey is the 2nd female? Explain. 
+  (b) Compute the probability from part (a). 
+  (c) The three possible scenarios that lead to 4th person you survey being the 2nd female are {M,M,F,F},{M,F,M,F},{F,M,M,F} One common feature among these scenarios is that the last trial is always female. In the first three trials there are 2 males and 1 female. Use the binomial coecient to confirm that there are 3 ways of ordering 2 males and 1 female. 
+  (d) Use the findings presented in part (c) to explain why the formula for the coecient for the negative binomial is $\binom{n-1}{k-1}$ while the formula for the binomial coecient is $\binom{n}{k}$.
+
+**_(a) Probability model that most suits is Negative Binomial Distribution. Following are features of Negative Binomial Distribution_**
+
+**_(1) The trials are independent._**
+**_(2) Each trial outcome can be classified as a success or failure._**
+**_(3) The probability of a success (p) is the same for each trial._**
+**_(4) The last trial must be a success._**
+
+**_In our case 4^th^ person in the survey need to 2^nd^ female._**
+
+**_(b) Probability of selecting a female is considered success (p) 0.55, And probability of failure = 1 - p = 1 - 0.55 = 0.45. Number of students to be picked before last trial to be successful (n) = 4. Out of 4 candidates there should be 2 females and last one must be 2^nd^ female. Using Negative Binomial Distribution P(the k^th^ successs on the n^th^ trial) = $\binom{n-1}{k-1}$p^k^(1-p)^(n-k)^ = $\binom{4-1}{2-1}$ x 0.55^(2)^ x (1-0.55)^(4-2)^= `r {3*0.55*0.55*0.45*0.45}`_**
+
+```
+# Formula to calculate Negative Binomial Distribution dnbinom(2,4,0.55) = `r {dnbinom(2,4,0.55)}`
+
+# There is slight rounding difference in manual calculation and using r function.
+```
+**_(c) As described in the problem there are 3 ways to write 2 males and 1 female combinations. Selecting female is considered a success. Number of students (n) = 3, Success (k) = 1, then Binomial Coecient = $\binom{n}{k}$ = $\frac{n!}{k! * \left(n - k\right)}$ = $\frac{3!}{1! * \left(3 - 1\right)}$ = `r {factorial(3)/(factorial(1)*factorial(3-1))}`_**
+
+**_(d) For Binomial Coecient there are no restriction on the combination of success and failure. They can happen in any sequence. Where has in Negative Binomial Distribution, always last trial is reserved for success. Last success is also known as k^th^ success is reserved for n^th^ trial also known as last trial. Hence we are short of one trial while calculating Negative Binomial Coecient for Negative Binomial Distribution._**
+
